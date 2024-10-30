@@ -9,6 +9,9 @@ def create_user(data):
 
   return user
 
+def get_all_users():
+  return db.session.query(User).all()
+
 def get_user(user_id):
   return db.session.get(User, user_id)
 

@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort
-from .controller import create_user, get_user, update_user, delete_user
+from .controller import create_user, get_all_users, get_user, update_user, delete_user
 
 user_blueprint = Blueprint('users', __name__)
 
@@ -9,6 +9,12 @@ def create():
   user = create_user(data)
 
   return jsonify(user.to_dict()), 201
+
+@user_blueprint.route('/users', methods=['GET'])
+def all():
+  users = get_all_users()
+
+  return jsonify([user.to_dict() for user in users]), 200
 
 @user_blueprint.route('/users/<int:user_id>', methods=['GET'])
 def retrieve(user_id):
