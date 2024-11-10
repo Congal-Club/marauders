@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request
-from .controller import UserController
+
+from .controller import AuthController, UserController
+from .middlewares import require_auth
 
 class UserRoutes:
   def __init__(self):
@@ -45,3 +47,42 @@ class UserRoutes:
       return jsonify({"message": "User deleted"}), 200
     
     return jsonify({"error": "User not found"}), 404
+
+class AuthRoutes:
+  def __init__(self):
+    self.blueprint = Blueprint('auth', __name__)
+    self.blueprint.add_url_rule('/auth/signup', 'signup', self.signup, methods=['POST'])
+    self.blueprint.add_url_rule('/auth/signin', 'signin', self.signin, methods=['POST'])
+    self.blueprint.add_url_rule('/auth/change-password', 'change_password', self.change_password, methods=['PUT'])
+
+  def signup(self):
+    data = request.json
+    user, error = AuthController.signup(data)
+    
+    if error:
+      return jsonify({"error": error}), 400
+    
+    return jsonify(user.to_dict()), 201
+
+  def signin(self):
+    data = request.json
+    token_data, error = AuthController.signin(data)
+    
+    if error:
+      return jsonify({"error": error}), 401
+    
+    return jsonify(token_data), 200
+
+  def change_password(self):
+    user_id = require_auth()
+
+    if not user_id:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    user, error = AuthController.change_password(user_id, data)
+    
+    if error:
+      return jsonify({"error": error}), 400
+    
+    return jsonify({"message": "Password updated successfully"}), 200
