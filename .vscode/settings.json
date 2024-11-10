@@ -3,7 +3,9 @@
     "backref",
     "jsonify",
     "nullable",
+    "signin",
     "sqlalchemy",
-    "sqlite"
+    "sqlite",
+    "werkzeug"
   ]
 }
