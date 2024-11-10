@@ -1,5 +1,11 @@
+import jwt
+import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from .database import db
 from .models import User, Post, Comment, Follow
+
+SECRET_KEY = "my_secret_key"
 
 class UserController:
   @staticmethod
@@ -44,6 +50,59 @@ class UserController:
     db.session.commit()
     
     return user
+
+class AuthController:
+  @staticmethod
+  def signup(data):
+    if db.session.query(User).filter_by(email=data.get("email")).first():
+      return None, "User already exists"
+    
+    hashed_password = generate_password_hash(data["password"], method='pbkdf2:sha256')
+    
+    user = User(
+      name=data["name"],
+      lastName=data["lastName"],
+      email=data["email"],
+      password=hashed_password,
+      image=data.get("image")
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    
+    return user, None
+
+  @staticmethod
+  def signin(data):
+    user = db.session.query(User).filter_by(email=data.get("email")).first()
+    
+    if not user or not check_password_hash(user.password, data["password"]):
+      return None, "Invalid email or password"
+
+    token = jwt.encode(
+      {
+        "user_id": user.id,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+      },
+      SECRET_KEY,
+      algorithm="HS256"
+    )
+
+    return {"token": token}, None
+
+  @staticmethod
+  def change_password(user_id, data):
+    user = db.session.get(User, user_id)
+    
+    if not user or not check_password_hash(user.password, data.get("old_password")):
+      return None, "Invalid user or password"
+
+    new_hashed_password = generate_password_hash(data.get("new_password"), method='pbkdf2:sha256')
+    user.password = new_hashed_password
+    
+    db.session.commit()
+    
+    return user, None
 
 class PostController:
   @staticmethod
