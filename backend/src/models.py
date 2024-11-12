@@ -66,3 +66,18 @@ class Follow(db.Model):
 
   def __repr__(self):
     return f"Follow(follower_id={self.user_following}, followed_id={self.user_followed})"
+
+class Like(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+  post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+  timestamp = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=False)
+
+  user = db.relationship("User", backref="likes", lazy=True)
+  post = db.relationship("Post", backref="likes", lazy=True)
+
+  def to_dict(self):
+    return {"id": self.id, "user_id": self.user_id, "post_id": self.post_id, "timestamp": self.timestamp}
+
+  def __repr__(self):
+    return f"Like(user_id={self.user_id}, post_id={self.post_id})"
