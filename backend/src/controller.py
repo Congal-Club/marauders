@@ -3,7 +3,7 @@ import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import db
-from .models import User, Post, Comment, Follow
+from .models import User, Post, Comment, Follow, Like, Image
 
 SECRET_KEY = "my_secret_key"
 
@@ -91,12 +91,12 @@ class AuthController:
     return {"token": token}, None
   
   @staticmethod
-  def signout(user_id):
+  def signout(user_authenticated):
     pass
 
   @staticmethod
-  def change_password(user_id, data):
-    user = db.session.get(User, user_id)
+  def change_password(user_authenticated, data):
+    user = db.session.get(User, user_authenticated)
     
     if not user or not check_password_hash(user.password, data.get("old_password")):
       return None, "Invalid user or password"
@@ -110,9 +110,81 @@ class AuthController:
 
 class PostController:
   @staticmethod
-  def create_post(data):
+  def create_post(user_id, data):
     pass
 
   @staticmethod
-  def get_all_posts():
+  def get_all_posts(user_id):
+    pass
+
+  @staticmethod
+  def get_post(user_id, post_id):
+    pass
+
+  @staticmethod
+  def update_post(user_id, post_id, data):
+    pass
+
+  @staticmethod
+  def delete_post(user_id, post_id):
+    pass
+
+class CommentController:
+  @staticmethod
+  def create_comment(user_id, post_id, data):
+    pass
+
+  @staticmethod
+  def get_all_comments(user_id, post_id):
+    pass
+
+  @staticmethod
+  def update_comment(user_id, post_id, comment_id, data):
+    pass
+
+  @staticmethod
+  def delete_comment(user_id, post_id, comment_id):
+    pass
+
+class FollowController:
+  @staticmethod
+  def follow_user(user_id, data):
+    pass
+
+  @staticmethod
+  def unfollow_user(user_id, data):
+    pass
+
+  @staticmethod
+  def get_all_followers(user_id):
+    pass
+
+  @staticmethod
+  def get_all_following(user_id):
+    pass
+
+class LikeController:
+  @staticmethod
+  def like_post(user_id, post_id):
+    pass
+
+  @staticmethod
+  def unlike_post(user_id, post_id):
+    pass
+
+  @staticmethod
+  def get_all_likes(user_id):
+    pass
+
+class ImageController:
+  @staticmethod
+  def upload_image(user_id, post_id, data):
+    pass
+
+  @staticmethod
+  def get_all_images(user_id, post_id):
+    pass
+
+  @staticmethod
+  def delete_image(user_id, post_id, image_id):
     pass
