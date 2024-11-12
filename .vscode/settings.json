@@ -4,6 +4,7 @@
     "jsonify",
     "nullable",
     "signin",
+    "signout",
     "sqlalchemy",
     "sqlite",
     "werkzeug"

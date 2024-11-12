@@ -89,6 +89,10 @@ class AuthController:
     )
 
     return {"token": token}, None
+  
+  @staticmethod
+  def signout(user_id):
+    pass
 
   @staticmethod
   def change_password(user_id, data):

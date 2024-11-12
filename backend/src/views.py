@@ -51,8 +51,9 @@ class UserRoutes:
 class AuthRoutes:
   def __init__(self):
     self.blueprint = Blueprint('auth', __name__)
-    self.blueprint.add_url_rule('/auth/signup', 'signup', self.signup, methods=['POST'])
-    self.blueprint.add_url_rule('/auth/signin', 'signin', self.signin, methods=['POST'])
+    self.blueprint.add_url_rule('/auth/sign-up', 'signup', self.signup, methods=['POST'])
+    self.blueprint.add_url_rule('/auth/sign-in', 'signin', self.signin, methods=['POST'])
+    self.blueprint.add_url_rule('/auth/sign-out', 'signout', self.signout, methods=['POST'])
     self.blueprint.add_url_rule('/auth/change-password', 'change_password', self.change_password, methods=['PUT'])
 
   def signup(self):
@@ -72,6 +73,16 @@ class AuthRoutes:
       return jsonify({"error": error}), 401
     
     return jsonify(token_data), 200
+  
+  def signout(self):
+    user_id = require_auth()
+
+    if not user_id:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    AuthController.signout(user_id)
+    
+    return jsonify({"message": "Signed out successfully"}), 200
 
   def change_password(self):
     user_id = require_auth()
