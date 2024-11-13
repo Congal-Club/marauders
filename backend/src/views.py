@@ -20,7 +20,6 @@ class UserRoutes:
 
   def all(self):
     users = UserController.get_all_users()
-    
     return jsonify([user.to_dict() for user in users]), 200
 
   def retrieve(self, user_id):
@@ -108,19 +107,68 @@ class PostRoutes:
     self.blueprint.add_url_rule('/posts/<int:post_id>', 'delete', self.delete, methods=['DELETE'])
 
   def create(self):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    post = PostController.create_post(user_authenticated, data)
+
+    if not post:
+      return jsonify({"error": "Failed to create post"}), 400
+
+    return jsonify(post.to_dict()), 201
 
   def all(self):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+
+    posts = PostController.get_all_posts(user_authenticated)
+
+    return jsonify([post.to_dict() for post in posts]), 200
 
   def retrieve(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    post = PostController.get_post(user_authenticated, post_id)
+    
+    if post:
+      return jsonify(post.to_dict()), 200
+    
+    return jsonify({"error": "Post not found"}), 404
 
   def update(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    post = PostController.update_post(user_authenticated, post_id, data)
+    
+    if post:
+      return jsonify(post.to_dict()), 200
+    
+    return jsonify({"error": "Post not found"}), 404
 
   def delete(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    post = PostController.delete_post(user_authenticated, post_id)
+    
+    if post:
+      return jsonify({"message": "Post deleted"}), 200
+    
+    return jsonify({"error": "Post not found"}), 404
 
 class CommentRoutes:
   def __init__(self):

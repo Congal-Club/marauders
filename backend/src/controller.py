@@ -111,23 +111,47 @@ class AuthController:
 class PostController:
   @staticmethod
   def create_post(user_id, data):
-    pass
+    post = Post(**data)
+    post.user_id = user_id
+
+    db.session.add(post)
+    db.session.commit()
+    
+    return post
 
   @staticmethod
   def get_all_posts(user_id):
-    pass
+    return db.session.query(Post).all()
 
   @staticmethod
   def get_post(user_id, post_id):
-    pass
+    return db.session.get(Post, post_id)
 
   @staticmethod
   def update_post(user_id, post_id, data):
-    pass
+    post = db.session.get(Post, post_id)
+    
+    if not post:
+      return None
+    
+    for key, value in data.items():
+      setattr(post, key, value)
+    
+    db.session.commit()
+    
+    return post
 
   @staticmethod
   def delete_post(user_id, post_id):
-    pass
+    post = db.session.get(Post, post_id)
+    
+    if not post:
+      return None
+    
+    db.session.delete(post)
+    db.session.commit()
+    
+    return post
 
 class CommentController:
   @staticmethod
