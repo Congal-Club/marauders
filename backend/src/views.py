@@ -179,16 +179,55 @@ class CommentRoutes:
     self.blueprint.add_url_rule('/comments/<int:post_id>/<int:comment_id>', 'delete', self.delete, methods=['DELETE'])
 
   def create(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    comment = CommentController.create_comment(user_authenticated, post_id, data)
+
+    if not comment:
+      return jsonify({"error": "Failed to create comment"}), 400
+    
+    return jsonify(comment.to_dict()), 201
 
   def all(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    comments = CommentController.get_all_comments(user_authenticated, post_id)
+
+    return jsonify([comment.to_dict() for comment in comments]), 200
 
   def update(self, post_id, comment_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    comment = CommentController.update_comment(user_authenticated, post_id, comment_id, data)
+
+    if not comment:
+      return jsonify({"error": "Failed to update comment"}), 400
+    
+    return jsonify(comment.to_dict()), 200
 
   def delete(self, post_id, comment_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    comment = CommentController.delete_comment(user_authenticated, post_id, comment_id)
+
+    if not comment:
+      return jsonify({"error": "Failed to delete comment"}), 400
+    
+    return jsonify({"message": "Comment deleted"}), 200
 
 class FollowRoutes:
   def __init__(self):

@@ -156,19 +156,44 @@ class PostController:
 class CommentController:
   @staticmethod
   def create_comment(user_id, post_id, data):
-    pass
+    comment = Comment(**data)
+    comment.user_id = user_id
+    comment.post_id = post_id
+
+    db.session.add(comment)
+    db.session.commit()
+    
+    return comment
 
   @staticmethod
   def get_all_comments(user_id, post_id):
-    pass
+    return db.session.query(Comment).filter_by(post_id=post_id).all()
 
   @staticmethod
   def update_comment(user_id, post_id, comment_id, data):
-    pass
+    comment = db.session.get(Comment, comment_id)
+    
+    if not comment:
+      return None
+    
+    for key, value in data.items():
+      setattr(comment, key, value)
+    
+    db.session.commit()
+    
+    return comment
 
   @staticmethod
   def delete_comment(user_id, post_id, comment_id):
-    pass
+    comment = db.session.get(Comment, comment_id)
+    
+    if not comment:
+      return None
+    
+    db.session.delete(comment)
+    db.session.commit()
+    
+    return comment
 
 class FollowController:
   @staticmethod
