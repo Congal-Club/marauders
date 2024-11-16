@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, send_from_directory
+import os
 
 from .database import db
 from .views import UserRoutes, AuthRoutes, PostRoutes, CommentRoutes, FollowRoutes, LikeRoutes, ImageRoutes
@@ -8,6 +9,12 @@ def create_app():
   
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///marauders.db'
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+  app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+  os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+  @app.route('/uploads/<filename>')
+  def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
   
   db.init_app(app)
   
