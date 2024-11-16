@@ -1,6 +1,8 @@
+import os
 import jwt
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 from .database import db
 from .models import User, Post, Comment, Follow, Like, Image
@@ -230,25 +232,63 @@ class FollowController:
 class LikeController:
   @staticmethod
   def like_post(user_id, post_id):
-    pass
+    like = Like(user_id=user_id, post_id=post_id)
+
+    db.session.add(like)
+    db.session.commit()
+
+    return like
 
   @staticmethod
   def unlike_post(user_id, post_id):
-    pass
+    like = db.session.query(Like).filter_by(user_id=user_id, post_id=post_id).first()
+
+    if not like:
+      return None
+
+    db.session.delete(like)
+    db.session.commit()
+
+    return like
 
   @staticmethod
-  def get_all_likes(user_id):
-    pass
+  def get_all_likes(post_id):
+    likes = db.session.query(Like).filter_by(post_id=post_id).all()
+    return likes
 
 class ImageController:
   @staticmethod
-  def upload_image(user_id, post_id, data):
-    pass
+  def upload_image(post_id, file):
+    filename = secure_filename(file.filename)
+    upload_folder = os.getenv('UPLOAD_FOLDER', './uploads')
+    filepath = os.path.join(upload_folder, filename)
+    
+    file.save(filepath)
+
+    relative_path = f'uploads/{filename}'
+    image = Image(image=relative_path, post_id=post_id)
+
+    db.session.add(image)
+    db.session.commit()
+    
+    return image
 
   @staticmethod
-  def get_all_images(user_id, post_id):
-    pass
+  def get_all_images(post_id):
+    images = db.session.query(Image).filter_by(post_id=post_id).all()
+    return images
 
   @staticmethod
-  def delete_image(user_id, post_id, image_id):
-    pass
+  def delete_image(post_id, image_id):
+    image = Image.query.filter_by(post_id=post_id, id=image_id).first()
+
+    if not image:
+      return None
+    
+    if os.path.exists(image.image):
+      os.remove(image.image)
+
+    db.session.delete(image)
+    db.session.commit()
+
+    return image

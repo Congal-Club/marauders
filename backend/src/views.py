@@ -291,13 +291,40 @@ class LikeRoutes:
     self.blueprint.add_url_rule('/likes/<int:post_id>', 'all', self.all, methods=['GET'])
 
   def add(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    like = LikeController.like_post(user_authenticated, post_id)
+
+    if not like:
+      return jsonify({"error": "Failed to like post"}), 400
+    
+    return jsonify(like.to_dict()), 201
 
   def remove(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    like = LikeController.unlike_post(user_authenticated, post_id)
+
+    if not like:
+      return jsonify({"error": "Failed to unlike post"}), 400
+    
+    return jsonify(like.to_dict()), 200
 
   def all(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    likes = LikeController.get_all_likes(post_id)
+
+    return jsonify([like.to_dict() for like in likes]), 200
 
 class ImageRoutes:
   def __init__(self):
@@ -307,10 +334,45 @@ class ImageRoutes:
     self.blueprint.add_url_rule('/images/<int:post_id>/<int:image_id>', 'delete', self.delete, methods=['DELETE'])
 
   def upload(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    if 'file' not in request.files:
+      return jsonify({"error": "No file part in the request"}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+      return jsonify({"error": "No selected file"}), 400
+    
+    result = ImageController.upload_image(post_id, file)
+    
+    if result:
+      return jsonify({"message": "Image uploaded successfully", "image": result.to_dict()}), 201
+    
+    return jsonify({"error": "Failed to upload image"}), 500
 
   def all(self, post_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    images = ImageController.get_all_images(post_id)
+
+    return jsonify([image.to_dict() for image in images]), 200
 
   def delete(self, post_id, image_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    image = ImageController.delete_image(post_id, image_id)
+    
+    if image:
+      return jsonify({"message": "Image deleted successfully"}), 200
+    
+    return jsonify({"error": "Failed to delete image"}), 404
