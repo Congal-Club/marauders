@@ -197,20 +197,35 @@ class CommentController:
 
 class FollowController:
   @staticmethod
-  def follow_user(user_id, data):
-    pass
+  def follow_user(auth_user, user_id):
+    follow = Follow(user_following=auth_user, user_followed=user_id)
+
+    db.session.add(follow)
+    db.session.commit()
+
+    return follow
 
   @staticmethod
-  def unfollow_user(user_id, data):
-    pass
+  def unfollow_user(auth_user, user_id):
+    follow = db.session.query(Follow).filter_by(user_following=auth_user, user_followed=user_id).first()
+
+    if not follow:
+      return None
+
+    db.session.delete(follow)
+    db.session.commit()
+
+    return follow
 
   @staticmethod
   def get_all_followers(user_id):
-    pass
+    followers = db.session.query(Follow).filter_by(user_followed=user_id).all()
+    return followers
 
   @staticmethod
   def get_all_following(user_id):
-    pass
+    following = db.session.query(Follow).filter_by(user_following=user_id).all()
+    return following
 
 class LikeController:
   @staticmethod

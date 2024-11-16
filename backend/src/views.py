@@ -234,20 +234,54 @@ class FollowRoutes:
     self.blueprint = Blueprint('follows', __name__)
     self.blueprint.add_url_rule('/follows/<int:user_id>', 'follow', self.follow, methods=['POST'])
     self.blueprint.add_url_rule('/follows/<int:user_id>', 'unfollow', self.unfollow, methods=['DELETE'])
-    self.blueprint.add_url_rule('/follows/<int:user_id>', 'followers', self.followers, methods=['GET'])
-    self.blueprint.add_url_rule('/follows/<int:user_id>', 'following', self.following, methods=['GET'])
+    self.blueprint.add_url_rule('/follows/followers/<int:user_id>', 'followers', self.followers, methods=['GET'])
+    self.blueprint.add_url_rule('/follows/following/<int:user_id>', 'following', self.following, methods=['GET'])
 
   def follow(self, user_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    follow = FollowController.follow_user(user_authenticated, user_id)
+
+    if not follow:
+      return jsonify({"error": "Failed to follow user"}), 400
+    
+    return jsonify(follow.to_dict()), 201
 
   def unfollow(self, user_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    follow = FollowController.unfollow_user(user_authenticated, user_id)
+
+    if not follow:
+      return jsonify({"error": "Failed to unfollow user"}), 400
+    
+    return jsonify(follow.to_dict()), 200
 
   def followers(self, user_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    followers = FollowController.get_all_followers(user_id)
+
+    return jsonify([follower.to_dict() for follower in followers]), 200
 
   def following(self, user_id):
-    pass
+    user_authenticated = require_auth()
+
+    if not user_authenticated:
+      return jsonify({"error": "Unauthorized"}), 401
+    
+    following = FollowController.get_all_following(user_id)
+
+    return jsonify([follow.to_dict() for follow in following]), 200
 
 class LikeRoutes:
   def __init__(self):
