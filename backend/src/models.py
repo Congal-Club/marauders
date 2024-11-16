@@ -1,3 +1,4 @@
+from flask import url_for
 from .database import db
 
 class User(db.Model):
@@ -39,7 +40,11 @@ class Image(db.Model):
   post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
 
   def to_dict(self):
-    return {"id": self.id, "image": self.image, "post_id": self.post_id}
+    return {
+      "id": self.id,
+      "image": url_for('uploaded_file', filename=self.image.split('/')[-1], _external=True),
+      "post_id": self.post_id
+    }
 
   def __repr__(self):
     return f"Image(id={self.id}, post_id={self.post_id})"
