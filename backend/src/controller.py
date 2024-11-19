@@ -128,7 +128,9 @@ class AuthController:
 class PostController:
   @staticmethod
   def create_post(user_id, data):
-    post = Post(**data)
+    post = Post(
+      content=data.get("content")
+    )
     post.user_id = user_id
 
     db.session.add(post)

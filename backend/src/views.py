@@ -171,14 +171,10 @@ class PostRoutes:
     
     data = request.json
 
-    title = data.get("title", "").strip()
     content = data.get("content", "").strip()
 
-    if not title or not content:
-      return jsonify({"error": "Title and content are required"}), 400
-
-    if len(title) > 255:
-      return jsonify({"error": "Title cannot exceed 255 characters"}), 400
+    if not content:
+      return jsonify({"error": "Content is required"}), 400
 
     post = PostController.create_post(user_authenticated, data)
 
@@ -217,10 +213,6 @@ class PostRoutes:
       return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
-
-    if "title" in data and len(data["title"]) > 255:
-      return jsonify({"error": "Title cannot exceed 255 characters"}), 400
-
     post = PostController.update_post(user_authenticated, post_id, data)
     
     if post:
