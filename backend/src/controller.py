@@ -12,7 +12,15 @@ SECRET_KEY = "my_secret_key"
 class UserController:
   @staticmethod
   def create_user(data):
-    user = User(**data)
+    hashed_password = generate_password_hash(data["password"], method='pbkdf2:sha256')
+
+    user = User(
+      name=data["name"],
+      lastName=data["lastName"],
+      email=data["email"],
+      password=hashed_password,
+      image=data.get("image")
+    )
 
     db.session.add(user)
     db.session.commit()
@@ -36,6 +44,9 @@ class UserController:
     
     for key, value in data.items():
       setattr(user, key, value)
+
+    hashed_password = generate_password_hash(data["password"], method='pbkdf2:sha256')
+    user.password = hashed_password
     
     db.session.commit()
     
