@@ -21,7 +21,7 @@ def test_client():
       db.drop_all()
 
 def test_create_user_success(test_client):
-  response = test_client.post("/users", json={
+  response = test_client.post("/api/users", json={
     "name": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com",
@@ -34,12 +34,12 @@ def test_create_user_success(test_client):
   assert data["email"] == "john.doe@example.com"
 
 def test_create_user_missing_fields(test_client):
-  response = test_client.post("/users", json={"email": "missing@example.com"})
+  response = test_client.post("/api/users", json={"email": "missing@example.com"})
   assert response.status_code == 400
   assert "Missing fields" in response.get_json()["error"]
 
 def test_create_user_invalid_email(test_client):
-  response = test_client.post("/users", json={
+  response = test_client.post("/api/users", json={
     "name": "John",
     "lastName": "Doe",
     "email": "invalid-email",
@@ -50,14 +50,14 @@ def test_create_user_invalid_email(test_client):
   assert "Invalid email format" in response.get_json()["error"]
 
 def test_create_user_duplicate_email(test_client):
-  test_client.post("/users", json={
+  test_client.post("/api/users", json={
     "name": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com",
     "password": "password123"
   })
 
-  response = test_client.post("/users", json={
+  response = test_client.post("/api/users", json={
     "name": "Jane",
     "lastName": "Doe",
     "email": "john.doe@example.com",
@@ -67,15 +67,15 @@ def test_create_user_duplicate_email(test_client):
   assert response.status_code == 400
 
 def test_get_all_users(test_client):
-  test_client.post("/users", json={"name": "John", "lastName": "Doe", "email": "john.doe@example.com", "password": "password123"})
-  response = test_client.get("/users")
+  test_client.post("/api/users", json={"name": "John", "lastName": "Doe", "email": "john.doe@example.com", "password": "password123"})
+  response = test_client.get("/api/users")
   assert response.status_code == 200
   assert len(response.get_json()) == 1
 
 def test_delete_user_success(test_client):
-  response = test_client.post("/users", json={"name": "John", "lastName": "Doe", "email": "john.doe@example.com", "password": "password123"})
+  response = test_client.post("/api/users", json={"name": "John", "lastName": "Doe", "email": "john.doe@example.com", "password": "password123"})
   user_id = response.get_json()["id"]
-  response = test_client.delete(f"/users/{user_id}")
+  response = test_client.delete(f"/api/users/{user_id}")
   
   assert response.status_code == 200
   assert "User deleted" in response.get_json()["message"]

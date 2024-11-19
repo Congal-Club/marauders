@@ -34,6 +34,9 @@ class UserRoutes:
       return jsonify({"error": "Password must be at least 8 characters long, including letters and numbers"}), 400
 
     user = UserController.create_user(data)
+
+    if not user:
+      return jsonify({"error": "Failed to create user"}), 400
     
     return jsonify(user.to_dict()), 201
 
