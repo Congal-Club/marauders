@@ -248,14 +248,13 @@ class CommentRoutes:
       return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
-
-    content = data.get("content", "").strip()
+    comment = data.get("comment", "").strip()
     
-    if not content:
-      return jsonify({"error": "Content is required"}), 400
+    if not comment:
+      return jsonify({"error": "Comment is required"}), 400
 
-    if len(content) > 500:
-      return jsonify({"error": "Content cannot exceed 500 characters"}), 400
+    if len(comment) > 500:
+      return jsonify({"error": "Comment cannot exceed 500 characters"}), 400
 
     comment = CommentController.create_comment(user_authenticated, post_id, data)
 
@@ -281,6 +280,14 @@ class CommentRoutes:
       return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
+    content = data.get("comment", "").strip()
+
+    if not content:
+      return jsonify({"error": "Comment is required"}), 400
+    
+    if len(content) > 500:
+      return jsonify({"error": "Comment cannot exceed 500 characters"}), 400
+
     comment = CommentController.update_comment(user_authenticated, post_id, comment_id, data)
 
     if not comment:
