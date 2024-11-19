@@ -21,8 +21,6 @@ def client():
 
 
 def test_signup_valid(client):
-  """Test para un registro exitoso"""
-
   response = client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "lastName": "Villalobos Olmos",
@@ -38,8 +36,6 @@ def test_signup_valid(client):
 
 
 def test_signup_missing_fields(client):
-  """Test para un registro con campos faltantes"""
-
   response = client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "password": "SecurePass123"
@@ -50,8 +46,6 @@ def test_signup_missing_fields(client):
 
 
 def test_signup_invalid_email(client):
-  """Test para un registro con un formato de correo electrónico inválido"""
-
   response = client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "lastName": "Villalobos Olmos",
@@ -64,8 +58,6 @@ def test_signup_invalid_email(client):
 
 
 def test_signup_weak_password(client):
-  """Test para un registro con una contraseña débil"""
-
   response = client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "lastName": "Villalobos Olmos",
@@ -78,8 +70,6 @@ def test_signup_weak_password(client):
 
 
 def test_signup_duplicate_email(client):
-  """Test para un registro con un correo electrónico ya registrado"""
-
   client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "lastName": "Villalobos Olmos",
@@ -99,8 +89,6 @@ def test_signup_duplicate_email(client):
 
 
 def test_signin_valid(client):
-  """Test para un inicio de sesión exitoso"""
-
   hashed_password = generate_password_hash("SecurePass123", method='pbkdf2:sha256')
   user = User(name="Cesar", lastName="Villalobos Olmos", email="cesarvillalobosolmos.01@gmail.com", password=hashed_password)
   db.session.add(user)
@@ -116,8 +104,6 @@ def test_signin_valid(client):
 
 
 def test_signin_invalid_email(client):
-  """Test para un inicio de sesión con un correo electrónico no registrado"""
-
   response = client.post('/api/auth/sign-in', json={
     "email": "unknown@example.com",
     "password": "SecurePass123"
@@ -128,8 +114,6 @@ def test_signin_invalid_email(client):
 
 
 def test_signin_invalid_password(client):
-  """Test para un inicio de sesión con una contraseña incorrecta"""
-
   hashed_password = generate_password_hash("SecurePass123", method='pbkdf2:sha256')
   user = User(name="Cesar", lastName="Villalobos Olmos", email="cesarvillalobosolmos.01@gmail.com", password=hashed_password)
   db.session.add(user)
@@ -145,8 +129,6 @@ def test_signin_invalid_password(client):
 
 
 def test_change_password_valid(client):
-  """Test para un cambio de contraseña exitoso"""
-  
   response_signup = client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "lastName": "Villalobos Olmos",
@@ -179,8 +161,6 @@ def test_change_password_valid(client):
 
 
 def test_change_password_invalid_old_password(client):
-  """Test para un cambio de contraseña con una contraseña actual incorrecta"""
-  
   response_signup = client.post('/api/auth/sign-up', json={
     "name": "Cesar",
     "lastName": "Villalobos Olmos",

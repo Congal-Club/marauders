@@ -1,8 +1,10 @@
 import pytest
 from werkzeug.security import generate_password_hash
+
 from src.server import create_app
 from src.database import db
-from src.models import User, Post, Like
+from src.models import User, Post
+
 
 @pytest.fixture
 def client():
@@ -30,6 +32,7 @@ def client():
     db.session.remove()
     db.drop_all()
 
+
 def test_like_post(client, monkeypatch):
   def mock_auth():
     return 1
@@ -42,10 +45,12 @@ def test_like_post(client, monkeypatch):
   assert data['user_id'] == 1
   assert data['post_id'] == 1
 
+
 def test_like_post_unauthorized(client):
   response = client.post('/api/likes/1')
   assert response.status_code == 401
   assert response.get_json()['error'] == "Unauthorized"
+
 
 def test_unlike_post(client, monkeypatch):
   def mock_auth():
@@ -61,6 +66,7 @@ def test_unlike_post(client, monkeypatch):
   assert data['user_id'] == 1
   assert data['post_id'] == 1
 
+
 def test_unlike_post_not_found(client, monkeypatch):
   def mock_auth():
     return 1
@@ -69,6 +75,7 @@ def test_unlike_post_not_found(client, monkeypatch):
   response = client.delete('/api/likes/1')
   assert response.status_code == 400
   assert response.get_json()['error'] == "Failed to unlike post"
+
 
 def test_get_all_likes(client, monkeypatch):
   def mock_auth():

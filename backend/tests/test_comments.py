@@ -3,7 +3,8 @@ from werkzeug.security import generate_password_hash
 
 from src.server import create_app
 from src.database import db
-from src.models import Comment, User, Post
+from src.models import User, Post
+
 
 @pytest.fixture
 def client():
@@ -33,6 +34,7 @@ def client():
     db.session.remove()
     db.drop_all()
 
+
 def test_create_comment(client):
   response_signin = client.post('/api/auth/sign-in', json={
     "email": "cesarvillalobosolmos.01@gmail.com",
@@ -47,11 +49,12 @@ def test_create_comment(client):
     json={"comment": "This is a test comment."},
     headers={"Authorization": f"Bearer {token}"}
   )
+
   assert response.status_code == 201
-  
   data = response.get_json()
   assert data['comment'] == "This is a test comment."
   assert data['post_id'] == 1
+
 
 def test_create_comment_no_content(client):
   response_signin = client.post('/api/auth/sign-in', json={
@@ -66,6 +69,7 @@ def test_create_comment_no_content(client):
   assert response.status_code == 400
   assert response.get_json()['error'] == "Comment is required"
 
+
 def test_create_comment_exceeds_length(client):
   response_signin = client.post('/api/auth/sign-in', json={
     "email": "cesarvillalobosolmos.01@gmail.com",
@@ -79,6 +83,7 @@ def test_create_comment_exceeds_length(client):
   response = client.post('/api/comments/1', json={"comment": long_content}, headers={"Authorization": f"Bearer {token}"})
   assert response.status_code == 400
   assert response.get_json()['error'] == "Comment cannot exceed 500 characters"
+
 
 def test_get_all_comments(client):
   response_signin = client.post('/api/auth/sign-in', json={
@@ -100,6 +105,7 @@ def test_get_all_comments(client):
   assert data[0]['comment'] == "First comment"
   assert data[1]['comment'] == "Second comment"
 
+
 def test_update_comment(client):
   response_signin = client.post('/api/auth/sign-in', json={
     "email": "cesarvillalobosolmos.01@gmail.com",
@@ -117,6 +123,7 @@ def test_update_comment(client):
   data = response.get_json()
   assert data['comment'] == "Updated comment"
 
+
 def test_update_comment_not_found(client):
   response_signin = client.post('/api/auth/sign-in', json={
     "email": "cesarvillalobosolmos.01@gmail.com",
@@ -129,6 +136,7 @@ def test_update_comment_not_found(client):
   response = client.put('/api/comments/1/99', json={"comment": "Does not exist"}, headers={"Authorization": f"Bearer {token}"})
   assert response.status_code == 400
   assert response.get_json()['error'] == "Failed to update comment"
+
 
 def test_delete_comment(client):
   response_signin = client.post('/api/auth/sign-in', json={
@@ -143,6 +151,7 @@ def test_delete_comment(client):
   response = client.delete('/api/comments/1/1', headers={"Authorization": f"Bearer {token}"})
   assert response.status_code == 200
   assert response.get_json()['message'] == "Comment deleted"
+
 
 def test_delete_comment_not_found(client):
   response_signin = client.post('/api/auth/sign-in', json={

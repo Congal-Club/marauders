@@ -5,7 +5,8 @@ from werkzeug.security import generate_password_hash
 
 from src.server import create_app
 from src.database import db
-from src.models import User, Post, Image
+from src.models import User, Post
+
 
 @pytest.fixture
 def client():
@@ -40,6 +41,7 @@ def client():
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
       os.rmdir(app.config['UPLOAD_FOLDER'])
 
+
 def test_upload_image(client, monkeypatch):
   def mock_auth():
     return 1
@@ -57,6 +59,7 @@ def test_upload_image(client, monkeypatch):
   assert 'image' in json_data
   assert 'test_image.jpg' in json_data['image']['image']
 
+
 def test_upload_image_no_file(client, monkeypatch):
   def mock_auth():
     return 1
@@ -65,6 +68,7 @@ def test_upload_image_no_file(client, monkeypatch):
   response = client.post('/api/images/1', data={}, content_type='multipart/form-data')
   assert response.status_code == 400
   assert response.get_json()['error'] == "No file part in the request"
+
 
 def test_get_all_images(client, monkeypatch):
   def mock_auth():
@@ -84,6 +88,7 @@ def test_get_all_images(client, monkeypatch):
   assert len(json_data) == 1
   assert 'test_image.jpg' in json_data[0]['image']
 
+
 def test_delete_image(client, monkeypatch):
   def mock_auth():
     return 1
@@ -100,6 +105,7 @@ def test_delete_image(client, monkeypatch):
   response = client.delete(f'/api/images/1/{image_id}')
   assert response.status_code == 200
   assert response.get_json()['message'] == "Image deleted successfully"
+
 
 def test_delete_image_not_found(client, monkeypatch):
   def mock_auth():

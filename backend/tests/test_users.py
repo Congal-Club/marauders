@@ -2,7 +2,7 @@ import pytest
 from app import create_app
 
 from src.database import db
-from src.models import User
+
 
 @pytest.fixture
 def test_client():
@@ -20,6 +20,7 @@ def test_client():
     with app.app_context():
       db.drop_all()
 
+
 def test_create_user_success(test_client):
   response = test_client.post("/api/users", json={
     "name": "John",
@@ -33,10 +34,12 @@ def test_create_user_success(test_client):
   assert data["name"] == "John"
   assert data["email"] == "john.doe@example.com"
 
+
 def test_create_user_missing_fields(test_client):
   response = test_client.post("/api/users", json={"email": "missing@example.com"})
   assert response.status_code == 400
   assert "Missing fields" in response.get_json()["error"]
+
 
 def test_create_user_invalid_email(test_client):
   response = test_client.post("/api/users", json={
@@ -48,6 +51,7 @@ def test_create_user_invalid_email(test_client):
 
   assert response.status_code == 400
   assert "Invalid email format" in response.get_json()["error"]
+
 
 def test_create_user_duplicate_email(test_client):
   test_client.post("/api/users", json={
@@ -66,11 +70,13 @@ def test_create_user_duplicate_email(test_client):
 
   assert response.status_code == 400
 
+
 def test_get_all_users(test_client):
   test_client.post("/api/users", json={"name": "John", "lastName": "Doe", "email": "john.doe@example.com", "password": "password123"})
   response = test_client.get("/api/users")
   assert response.status_code == 200
   assert len(response.get_json()) == 1
+
 
 def test_delete_user_success(test_client):
   response = test_client.post("/api/users", json={"name": "John", "lastName": "Doe", "email": "john.doe@example.com", "password": "password123"})
