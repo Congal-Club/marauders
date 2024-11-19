@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+import re
 
 from .controller import AuthController, UserController, PostController, CommentController, FollowController, LikeController, ImageController
 from .middlewares import require_auth
@@ -14,6 +15,24 @@ class UserRoutes:
 
   def create(self):
     data = request.json
+    
+    required_fields = ["email", "password", "name"]
+    missing_fields = [field for field in required_fields if not data.get(field)]
+    
+    if missing_fields:
+      return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
+
+    email = data["email"].strip()
+    password = data["password"].strip()
+
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    
+    if not re.match(email_regex, email):
+      return jsonify({"error": "Invalid email format"}), 400
+
+    if len(password) < 8 or not any(char.isdigit() for char in password) or not any(char.isalpha() for char in password):
+      return jsonify({"error": "Password must be at least 8 characters long, including letters and numbers"}), 400
+
     user = UserController.create_user(data)
     
     return jsonify(user.to_dict()), 201
@@ -32,6 +51,14 @@ class UserRoutes:
 
   def update(self, user_id):
     data = request.json
+
+    if "email" in data:
+      email = data["email"].strip()
+      email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+      
+      if not re.match(email_regex, email):
+        return jsonify({"error": "Invalid email format"}), 400
+        
     user = UserController.update_user(user_id, data)
     
     if user:
@@ -57,6 +84,21 @@ class AuthRoutes:
 
   def signup(self):
     data = request.json
+
+    email = data.get("email", "").strip()
+    password = data.get("password", "").strip()
+
+    if not email or not password:
+      return jsonify({"error": "Email and password are required"}), 400
+
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+    if not re.match(email_regex, email):
+      return jsonify({"error": "Invalid email format"}), 400
+
+    if len(password) < 8 or not any(char.isdigit() for char in password) or not any(char.isalpha() for char in password):
+      return jsonify({"error": "Password must be at least 8 characters long, including letters and numbers"}), 400
+
     user, error = AuthController.signup(data)
     
     if error:
@@ -66,6 +108,18 @@ class AuthRoutes:
 
   def signin(self):
     data = request.json
+
+    email = data.get("email", "").strip()
+    password = data.get("password", "").strip()
+
+    if not email or not password:
+      return jsonify({"error": "Email and password are required"}), 400
+
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+    if not re.match(email_regex, email):
+      return jsonify({"error": "Invalid email format"}), 400
+
     token_data, error = AuthController.signin(data)
     
     if error:
@@ -113,6 +167,16 @@ class PostRoutes:
       return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
+
+    title = data.get("title", "").strip()
+    content = data.get("content", "").strip()
+
+    if not title or not content:
+      return jsonify({"error": "Title and content are required"}), 400
+
+    if len(title) > 255:
+      return jsonify({"error": "Title cannot exceed 255 characters"}), 400
+
     post = PostController.create_post(user_authenticated, data)
 
     if not post:
@@ -150,6 +214,10 @@ class PostRoutes:
       return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
+
+    if "title" in data and len(data["title"]) > 255:
+      return jsonify({"error": "Title cannot exceed 255 characters"}), 400
+
     post = PostController.update_post(user_authenticated, post_id, data)
     
     if post:
@@ -185,6 +253,15 @@ class CommentRoutes:
       return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
+
+    content = data.get("content", "").strip()
+    
+    if not content:
+      return jsonify({"error": "Content is required"}), 400
+
+    if len(content) > 500:
+      return jsonify({"error": "Content cannot exceed 500 characters"}), 400
+
     comment = CommentController.create_comment(user_authenticated, post_id, data)
 
     if not comment:
