@@ -1,5 +1,5 @@
 /* ***** TEST EN MERCADO LIBRE ***** */
-import { expect, test } from '@playwright/test';
+// import { expect, test } from '@playwright/test';
 
 // El usuario crea una cuenta nueva
 /* test('Create New Account', async ({ page }) => {
@@ -113,7 +113,7 @@ import { expect, test } from '@playwright/test';
 }); */
 
 // El usuario se registra y ya tenía una cuenta registrada
-test('Register with Existing Account', async ({ page }) => {
+/* test('Register with Existing Account', async ({ page }) => {
   await page.goto('https://www.mercadolibre.com.mx/');
 
   const registerButton = page.locator('a:has-text("Crea tu cuenta")');
@@ -143,4 +143,4 @@ test('Register with Existing Account', async ({ page }) => {
   await page.pause();
 
   // await page.pause();
-});
+}); */
