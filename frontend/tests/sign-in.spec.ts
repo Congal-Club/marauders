@@ -1,8 +1,8 @@
 /* ***** TEST EN MERCADO LIBRE ***** */
-// import { expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 // El usuario inicia sesión
-/* test('User Login', async ({ page }) => {
+test('User Login', async ({ page }) => {
   await page.goto('https://www.mercadolibre.com.mx/');
 
   const registerButton = page.locator('a[data-link-id="login"]');
@@ -22,10 +22,10 @@
   await continueButton.click();
 
   await page.pause();
-}); */
+});
 
 // El usuario inicia sesión con una cuenta que no existe
-/* test('User Login with Nonexistent Account', async ({ page }) => {
+test('User Login with Nonexistent Account', async ({ page }) => {
   await page.goto('https://www.mercadolibre.com.mx/');
 
   const registerButton = page.locator('a[data-link-id="login"]');
@@ -51,4 +51,4 @@
   await captcha.click();
 
   await page.pause();
-}); */
+});

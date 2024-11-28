@@ -2,7 +2,7 @@
 import { expect, test } from '@playwright/test';
 
 // Intentar agregar producto al carrito sin seleccionar variantes
-/* test('Test add products without select variants', async ({ page }) => {
+test('Test add products without select variants', async ({ page }) => {
   await page.goto('https://articulo.mercadolibre.com.mx/MLM-2138323925-playera-camiseta-oversize-acid-wash-hombre-mujer-gym-casual-_JM');
 
   const productTitle = page.locator('h1[class="ui-pdp-title"]');
@@ -22,10 +22,10 @@ import { expect, test } from '@playwright/test';
   await expect(thirdVariant).toContainText('Talla:');
 
   await page.pause();
-}); */
+});
 
 // Selección de variantes antes de agregar al carrito
-/* test('Select variants before add to cart', async ({ page }) => {
+test('Select variants before add to cart', async ({ page }) => {
   await page.goto('https://articulo.mercadolibre.com.mx/MLM-2138323925-playera-camiseta-oversize-acid-wash-hombre-mujer-gym-casual-_JM');
 
   const firstVariantToSelect = page.locator('a[aria-label="Lisa, Boton 2 de 2"]');
@@ -50,10 +50,10 @@ import { expect, test } from '@playwright/test';
   await expect(needAccountTitle).toContainText('¡Hola! Para agregar al carrito, ingresa a tu cuenta');
 
   await page.pause();
-}); */
+});
 
 // Selección de variantes antes de intentar comprar
-/* test('Select variants before buy', async ({ page }) => {
+test('Select variants before buy', async ({ page }) => {
   await page.goto('https://articulo.mercadolibre.com.mx/MLM-2138323925-playera-camiseta-oversize-acid-wash-hombre-mujer-gym-casual-_JM');
 
   const firstVariantToSelect = page.locator('a[aria-label="Lisa, Boton 2 de 2"]');
@@ -78,4 +78,4 @@ import { expect, test } from '@playwright/test';
   await expect(needAccountTitle).toContainText('¡Hola! Para comprar, ingresa a tu cuenta');
 
   await page.pause();
-}); */
+});

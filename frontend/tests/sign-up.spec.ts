@@ -1,8 +1,8 @@
 /* ***** TEST EN MERCADO LIBRE ***** */
-// import { expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 // El usuario crea una cuenta nueva
-/* test('Create New Account', async ({ page }) => {
+test('Create New Account', async ({ page }) => {
   await page.goto('https://www.mercadolibre.com.mx/');
   
   const registerButton = page.locator('a:has-text("Crea tu cuenta")');
@@ -74,10 +74,10 @@
   // await continueButton3.click();
 
   await page.pause();
-}); */
+});
 
 // El usuario registra un correo no valido
-/* test('Register Invalid Email', async ({ page }) => {
+test('Register Invalid Email', async ({ page }) => {
   await page.goto('https://www.mercadolibre.com.mx/');
 
   const registerButton = page.locator('a:has-text("Crea tu cuenta")');
@@ -110,10 +110,10 @@
   await expect(adviceMessage).toContainText('Usa el formato nombre@ejemplo.com.');
 
   await page.pause();
-}); */
+});
 
 // El usuario se registra y ya tenía una cuenta registrada
-/* test('Register with Existing Account', async ({ page }) => {
+test('Register with Existing Account', async ({ page }) => {
   await page.goto('https://www.mercadolibre.com.mx/');
 
   const registerButton = page.locator('a:has-text("Crea tu cuenta")');
@@ -141,6 +141,4 @@
   await continueButton.click();
 
   await page.pause();
-
-  // await page.pause();
-}); */
+});
